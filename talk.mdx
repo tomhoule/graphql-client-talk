@@ -17,6 +17,44 @@ No graphql client in rust - (insert surprised mr bubz)
 
 ---
 
+### pure Rust...?
+
+<!-- no js dependencies -->
+<!-- insert line counts with json here -->
+
+---
+
+### Question to the audience
+
+---
+
+if a GraphQL query wore pants...
+
+---
+
+would it wear them like this
+
+```rust
+fn <Q>(
+    variables: &Q::Variables
+) -> Future<GraphQLQueryResult>
+where Q: GraphQLQuery
+```
+
+---
+
+or like this?
+
+```rust
+fn <Q>(
+    query: Q,
+    variables: &Q::Variables
+) -> Future<GraphQLQueryResult>
+where Q: GraphQLQuery
+```
+
+---
+
 ### Ecosystem
 
 <video
@@ -82,6 +120,12 @@ No graphql client in rust - (insert surprised mr bubz)
 ### Documentation management
 
 <!-- ghostbusters opening scene here -->
+
+---
+
+### CLI and build script APIs
+
+<!-- people with graphql experience -->
 
 ---
 
