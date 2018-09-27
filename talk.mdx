@@ -1,5 +1,12 @@
+export { book as theme } from 'mdx-deck/themes'
+import { Split } from 'mdx-deck/layouts'
 
 hi
+
+```notes
+- name
+- I want to talk about a small library I wrote
+```
 
 ---
 
@@ -12,6 +19,10 @@ hi
     a GraphQL client
 </small>
 </div>
+
+```notes
+- GraphQL client
+```
 
 ---
 
@@ -26,6 +37,12 @@ hi
 <div>
 no graphql client in Rust
 </div>
+
+```notes
+- I like GraphQL
+- I had ideas about GraphQL servers
+- Noticed there is no client in Rust
+```
 
 ---
 
@@ -45,18 +62,280 @@ no graphql client in Rust
 
 <small>counted with <a href="https://github.com/Aaronepower/tokei">tokei</a></small>
 
+```notes
+- impostor?
+```
+
 ---
 
 ### Wait, what?
+
+```notes
+- Let's backtrack a bit
+```
 
 ---
 
 <img src="./assets/songe-of-graphql.png" />
 
+```notes
+- Let's talk about GraphQL
+- Who has worked or is familiar with GraphQL?
+```
+
+
+---
+
+<img
+    src='./assets/GraphQL_Logo.svg.png'
+    height="150"
+/>
+
+- Developed at Facebook
+- Open sourced in 2015
+- Spec defining two languages, a type system and the behaviour of servers
+- A very rich, fast-growing ecosystem
+- Fast adoption -> GitHub, Shopify, Facebook, Twitter...
+
+```notes
+- Technology for building APIs, with clients requesting data from a servers
+- One query -> query a graph objecst and fields
+- Fetch exactly what you need
+- Nesting (post -> comment -> author -> posts)
+```
+
+---
+
+Excellent tooling
+
+<img
+    src='https://raw.githubusercontent.com/graphql/graphiql/master/resources/graphiql.png'
+/>
+
+---
+
+Introspection!
+
+```notes
+- You can ask a server, at runtime, what API it exposes
+- It returns a structured response you can generate code for a client from - think mini-SDK.
+```
+
+---
+
+It has types!
+
+```graphql
+type Character {
+  name: String!
+  appearsIn: [Episode]!
+}
+```
+
+```notes
+- Cool, we can map that to a struct!
+```
+
+---
+
+More types!
+
+```graphql
+type Starship {
+  id: ID!
+  name: String!
+  length(unit: LengthUnit = METER): Float
+}
+```
+
+```notes
+- Every field can take arguments
+```
+
+---
+
+Even more types!
+
+```graphql
+# In the schema
+union SearchResult = Human | Droid | Starship
+```
+
+---
+
+Query
+
+```graphql
+{
+  search(text: "an") {
+    ... on Human {
+      name
+      height
+    }
+    ... on Droid {
+      name
+      primaryFunction
+    }
+    ... on Starship {
+      name
+      length
+    }
+  }
+}
+```
+
+---
+
+Response (JSON)
+
+```graphql
+{
+  "data": {
+    "search": [
+      {
+        "name": "Han Solo",
+        "height": 1.8
+      },
+      {
+        "name": "Leia Organa",
+        "height": 1.5
+      },
+      {
+        "name": "TIE Advanced x1",
+        "length": 9.2
+      }
+    ]
+  }
+}
+```
+
+---
+
+A new challenger appears!
+
+```graphql
+interface Character {
+  id: ID!
+  name: String!
+  friends: [Character]
+  appearsIn: [Episode]!
+}
+```
+
+---
+
+```graphql
+type Human implements Character {
+  id: ID!
+  name: String!
+  friends: [Character]
+  appearsIn: [Episode]!
+  starships: [Starship]
+  totalCredits: Int
+}
+
+type Droid implements Character {
+  id: ID!
+  name: String!
+  friends: [Character]
+  appearsIn: [Episode]!
+  primaryFunction: String
+}
+```
+
+---
+
+```graphql
+query HeroForEpisode($ep: Episode!) {
+  hero(episode: $ep) {
+    name
+    ... on Droid {
+      primaryFunction
+    }
+  }
+}
+```
+
+---
+
+```graphql
+{
+  "data": {
+    "hero": {
+      "name": "R2-D2",
+      "primaryFunction": "Astromech"
+    }
+  }
+}
+```
 
 ---
 
 ### This is all very javascripty
+
+
+```notes
+- Challenge for the library: map that to nice Rust data structures
+```
+
+---
+
+Interlude: what's the API?
+
+
+```rust
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "src/graphql/schema.json",
+    query_path = "src/graphql/queries/my_query.graphql",
+)]
+pub struct MyQuery
+
+```
+
+...
+
+```rust
+    // this is the important line
+    let request_body = MyQuery::build_query(variables);
+
+    let client = reqwest::Client::new();
+    let mut res = client.post("/graphql").json(&request_body).send()?;
+    let response_body: Response<my_query::ResponseData> = res.json()?;
+```
+
+```notes
+- Build script and CLI codegen are WIP
+```
+
+---
+
+```graphql
+query MyQuery {
+    everything {
+        __typename
+        name
+        ... on Person {
+            birthday
+        }
+        ... on Organization {
+            industry
+            members(minimumAge: 40) {
+                birthday
+                name
+            }
+        }
+    }
+}
+```
+
+```notes
+- Even for a simple query, it's not obvious
+- We have Person twice, with different fields
+- Not options, that would not be nice
+- We have to generate two Person structs
+- Solution: paths in names
+```
 
 ---
 
@@ -81,10 +360,16 @@ if a GraphQL query wore pants...
 would it wear them like this
 
 ```rust
-fn <Q>(
+fn call<Q>(
+    &self,
     variables: &Q::Variables
 ) -> Future<GraphQLQueryResult>
 where Q: GraphQLQuery
+```
+...
+```rust
+
+let response = await!(client.call::<RepositoriesIndex>(&variables));
 ```
 
 ---
@@ -92,11 +377,18 @@ where Q: GraphQLQuery
 or like this?
 
 ```rust
-fn <Q>(
+fn call<Q>(
+    &self,
     query: Q,
     variables: &Q::Variables
 ) -> Future<GraphQLQueryResult>
 where Q: GraphQLQuery
+```
+...
+
+```rust
+let response = await!(client.call(RepositoriesIndex, &variables));
+
 ```
 
 ---
@@ -151,9 +443,12 @@ Contributors come at you fast and when you are least prepared.
 
 ### Future
 
-- normalized cache shared between implementations
-- live updates with subscriptions
-- support extensions like apollo's cache control
+- clients everywhere!
+    - normalized cache shared between implementations
+    - live updates with subscriptions
+- build script, CLI and possibly proc macro-based codegen workflows
+- better query validation
+- friendlier error messages
 - ...
 
 ---
