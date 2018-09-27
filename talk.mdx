@@ -343,6 +343,112 @@ query MyQuery {
 
 ---
 
+```rust
+// union SearchResult = Human | Droid | Starship
+
+#[derive(Deserialize)]
+#[serde(tag = "__typename")]
+enum SearchResult {
+  OnHuman(SearchResultOnHuman),
+  OnDroid(SearchResultOnDroid),
+  OnStarship(SearchResultOnStarship),
+}
+```
+
+<small>See <a href="https://serde.rs/enum-representations.html">enum representations</a> in the serde docs</small>
+
+
+---
+
+```graphql
+query MyQuery {
+  search(...) {
+    ...onHuman {
+      name
+    }
+    ...onDroid {
+      model
+    }
+    ...onStarship {
+      engine { name }
+    }
+  }
+}
+
+```
+
+```notes
+- You _have_to include __typename
+- And now for something completely different: interfaces
+```
+
+---
+
+Interfaces
+
+```graphql
+query HeroQuery {
+  hero(episode: JEDI) { # Character
+    __typename # will return the concrete type
+    name # part of Character
+    ...on Human {
+      hairColor
+    }
+  }
+}
+```
+
+```notes
+- Remember: this is what we write
+```
+
+---
+
+```json
+{
+  "data": {
+    "hero": {
+      "__typename": "Human",
+      "name": "Obi-Wan Kenobi",
+      "hairColor": "WHITE"
+    }
+  }
+}
+```
+
+
+```notes
+- This is what we get
+- We have the type! we can statically know which fields we will get.
+```
+
+
+---
+
+```rust
+
+#[derive(Deserialize)]
+#[serde(tag = "__typename")]
+struct MyQueryHero { // Character
+  typename: String,
+  // common fields
+  name: String,
+  #[serde(flatten)]
+  on: MyQueryHeroOn,
+}
+
+#[derive(Deserialize)]
+enum MyQueryHeroOn {
+  Human(MyQueryHeroOnHuman),
+}
+```
+
+```notes
+- 'member
+```
+
+---
+
 ### Question to the audience
 
 <video
@@ -444,8 +550,8 @@ Contributors come at you fast and when you are least prepared.
 ### Future
 
 - clients everywhere!
-    - normalized cache shared between implementations
-    - live updates with subscriptions
+- normalized cache shared between implementations
+- live updates with subscriptions
 - build script, CLI and possibly proc macro-based codegen workflows
 - better query validation
 - friendlier error messages
