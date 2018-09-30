@@ -5,7 +5,8 @@ hi
 
 ```notes
 - name
-- I want to talk about a small library I wrote
+- I want to talk about a small library I started early June
+- 0.5 release this week
 ```
 
 ---
@@ -22,27 +23,8 @@ hi
 
 ```notes
 - GraphQL client
-```
-
----
-
-### Why?
-
-<video
-    autoPlay
-    loop
-    src="./assets/cat-box.mp4"
-/>
-
-<div>
-no graphql client in Rust
-</div>
-
-```notes
-- If it fits, I sits
-- I like GraphQL
-- I had ideas about GraphQL servers
-- Noticed there is no client in Rust
+- for Rust
+- in Rust (next)
 ```
 
 ---
@@ -65,6 +47,27 @@ no graphql client in Rust
 
 ```notes
 - impostor?
+```
+
+---
+
+### Why?
+
+<video
+    autoPlay
+    loop
+    src="./assets/cat-box.mp4"
+/>
+
+<div>
+no graphql client in Rust
+</div>
+
+```notes
+- If it fits, I sits
+- I like GraphQL
+- I had ideas about GraphQL servers
+- Noticed there is no client in Rust
 ```
 
 ---
@@ -276,6 +279,7 @@ query HeroForEpisode($ep: Episode!) {
 
 
 ```notes
+- A lot of things were easy (nullability, mapping the primitive types, custom scalars)
 - Challenge for the library: map that to nice Rust data structures
 ```
 
@@ -336,6 +340,7 @@ query MyQuery($page: Int!) {
 - Not options, that would not be nice
 - We have to generate two Person structs
 - Solution: paths in names
+- Lots of small interesting problems like this
 ```
 
 ---
