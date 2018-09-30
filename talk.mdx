@@ -39,6 +39,7 @@ no graphql client in Rust
 </div>
 
 ```notes
+- If it fits, I sits
 - I like GraphQL
 - I had ideas about GraphQL servers
 - Noticed there is no client in Rust
@@ -311,8 +312,8 @@ pub struct MyQuery
 ---
 
 ```graphql
-query MyQuery {
-    everything {
+query MyQuery($page: Int!) {
+    contacts(page: $page) {
         __typename
         name
         ... on Person {
@@ -362,7 +363,7 @@ enum SearchResult {
 
 ```graphql
 query MyQuery {
-  search(...) {
+  search(searchTerm: "Tatooine") {
     ...onHuman {
       name
     }
@@ -428,7 +429,6 @@ query HeroQuery {
 ```rust
 
 #[derive(Deserialize)]
-#[serde(tag = "__typename")]
 struct MyQueryHero { // Character
   typename: String,
   // common fields
@@ -438,8 +438,11 @@ struct MyQueryHero { // Character
 }
 
 #[derive(Deserialize)]
+#[serde(tag = "__typename")]
 enum MyQueryHeroOn {
   Human(MyQueryHeroOnHuman),
+  Droid,
+  Starship,
 }
 ```
 
@@ -503,7 +506,29 @@ let response = await!(client.call(RepositoriesIndex, &variables));
 
 ---
 
+
 Contributors come at you fast and when you are least prepared.
+
+![](./assets/issue_screenshot_1.png)
+
+```notes
+- Thought it was ready - wrong
+- Underestimated the work
+```
+
+---
+
+export default Split
+
+
+<img src="./assets/issue_screenshot_2.png" />
+
+<video
+  autoPlay
+  loop
+  src="./assets/bubz.mp4"
+/>
+
 
 ---
 
@@ -531,12 +556,18 @@ Contributors come at you fast and when you are least prepared.
 <video
     autoPlay
     loop
-    src="./assets/bike_failure.mp4"
+    src="./assets/corgi-failure.mp4"
 />
 
 ---
 
 ### Dependencies - cargo-edit
+
+<video
+    autoPlay
+    loop
+    src="./assets/cargo-edit.mp4"
+/>
 
 ---
 
@@ -581,13 +612,20 @@ Contributors come at you fast and when you are least prepared.
 
 ### Documentation management
 
+<div>
+<img src="./assets/ghostbusters_library_1.gif" />
+<img src="./assets/ghostbusters_library_2.gif" />
+</div>
+
 <!-- ghostbusters opening scene here -->
 
 ---
 
 ### CLI and build script APIs
 
-<!-- people with graphql experience -->
+```notes
+- people with graphql experience: what do you think?
+```
 
 ---
 
