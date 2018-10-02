@@ -381,9 +381,9 @@ query MyQuery($page: Int!) {
 #[derive(Deserialize)]
 #[serde(tag = "__typename")]
 enum Search {
-  OnHuman(SearchOnHuman),
-  OnDroid(SearchOnDroid),
-  OnStarship(SearchOnStarship),
+  Human(SearchOnHuman),
+  Droid(SearchOnDroid),
+  Starship(SearchOnStarship),
 }
 ```
 
