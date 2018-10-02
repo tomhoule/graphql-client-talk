@@ -350,15 +350,40 @@ query MyQuery($page: Int!) {
 
 ---
 
+```graphql
+{
+  search(text: "an") {
+    ... on Human {
+      name
+      height
+    }
+    ... on Droid {
+      name
+      primaryFunction
+    }
+    ... on Starship {
+      name
+      length
+    }
+  }
+}
+```
+
+```notes
+- remember the query with an union
+```
+
+---
+
 ```rust
 // union SearchResult = Human | Droid | Starship
 
 #[derive(Deserialize)]
 #[serde(tag = "__typename")]
-enum SearchResult {
-  OnHuman(SearchResultOnHuman),
-  OnDroid(SearchResultOnDroid),
-  OnStarship(SearchResultOnStarship),
+enum Search {
+  OnHuman(SearchOnHuman),
+  OnDroid(SearchOnDroid),
+  OnStarship(SearchOnStarship),
 }
 ```
 
