@@ -1,0 +1,13 @@
+- too fast at the beginning (problem space)
+    - start with basic examples -> go into graphql-client right away
+    - basic example in graphql, then rust example next to it
+- introduce why you want graphql (client can specify what it wants)
+- jumping slides
+- use the same schema for the whole talk
+- move the usage example earlier
+- what it generates
+- it's just plain old structs and enums
+- explain name generation better
+- show which language the slide is in
+
+- polacode
