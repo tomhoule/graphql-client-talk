@@ -1,7 +1,7 @@
-export { comic as theme } from 'mdx-deck/themes'
+export { swiss   as theme } from 'mdx-deck/themes'
 import { Split } from 'mdx-deck/layouts'
 
-hi
+graphql-client
 
 ```notes
 - name
@@ -12,20 +12,23 @@ hi
 
 ---
 
-### What?
+### Why?
 
-<img src="./assets/evil_organization.png" />
+<video
+    autoPlay
+    loop
+    src="./assets/cat-box.mp4"
+/>
 
 <div>
-<small>
-    a GraphQL client
-</small>
+no graphql client in Rust
 </div>
 
 ```notes
-- GraphQL client
-- for Rust
-- in Rust (next)
+- If it fits, I sits
+- I like GraphQL
+- I had ideas about GraphQL servers
+- Noticed there is no client in Rust
 ```
 
 ---
@@ -48,27 +51,6 @@ hi
 
 ```notes
 - impostor?
-```
-
----
-
-### Why?
-
-<video
-    autoPlay
-    loop
-    src="./assets/cat-box.mp4"
-/>
-
-<div>
-no graphql client in Rust
-</div>
-
-```notes
-- If it fits, I sits
-- I like GraphQL
-- I had ideas about GraphQL servers
-- Noticed there is no client in Rust
 ```
 
 ---
@@ -96,14 +78,15 @@ no graphql client in Rust
     height="150"
 />
 
+- A query language and a specification for building APIs
 - Developed at Facebook
 - Open sourced in 2015
-- Spec defining two languages, a type system and the behaviour of servers
 - A very rich, fast-growing ecosystem
 - Fast adoption -> GitHub, Shopify, Facebook, Twitter...
 
 ```notes
 - Technology for building APIs, with clients requesting data from a servers
+- Spec defining two languages, a type system and the behaviour of servers
 - One query -> query a graph objecst and fields
 - Fetch exactly what you need
 - Nesting (post -> comment -> author -> posts)
@@ -111,19 +94,46 @@ no graphql client in Rust
 
 ---
 
-Excellent tooling
+Example
 
-<img
-    src='https://raw.githubusercontent.com/graphql/graphiql/master/resources/graphiql.png'
-/>
+
+![](./assets/github-graphiql-example.png)
+
+
+```notes
+- You get what you ask for (client-centric)
+- Nesting -> you query an object tree
+```
 
 ---
 
-Introspection!
+## Why you want a client library
+
+- Correctness
+- Take advantage of behaviour defined in the spec (error handling...)
+- Caching
+- *Strong typing*
 
 ```notes
-- You can ask a server, at runtime, what API it exposes
+- It's easy to make wrong requests
+- That's a small part of the library
+- No caching yet
+- This is what I want to talk about
+```
+
+---
+
+## Introspection
+
+- GraphQL is typed
+- Introspection is defined by the spec
+- With a GraphQL query and the schema, we can generate a struct for the response shape
+
+```notes
+- GraphQL has a type system - defined by the spec so it's shared between all server implementations
+- You can ask a server, at runtime, what API it exposes (also in the spec)
 - It returns a structured response you can generate code for a client from - think mini-SDK.
+- Why you need both query and schema (selection)
 ```
 
 ---
