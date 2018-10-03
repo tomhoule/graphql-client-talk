@@ -1,0 +1,60 @@
+# The query (GraphQL)
+
+query Search($name: String!) {
+  search(name: $name) {
+    __typename
+    id
+    name
+    ... on Person {
+      birthday
+    }
+    ... on Organization {
+      members(page: 1) {
+        birthday
+      }
+    }
+  }
+}
+
+# Response (JSON)
+
+{
+    "data": {
+        "search": [
+            {
+                "__typename": "Person",
+                "id": "18551",
+                "name": "Marie Curie",
+                "birthday": "1867-11-07"
+            },
+            {
+                "__typename": "Organization",
+                "id": "18556",
+                "name": "Red Cross",
+                "members": [{"birthday":"1982-01-12"},{"birthday":"1996-08-13"}]
+            }
+        ]
+    }
+}
+
+# Generated code (Rust)
+
+#[derive(Deserialize)]
+struct ResponseData {
+    entry: Vec<SearchSearch>,
+}
+
+#[derive(Deserialize)]
+struct SearchSearch {
+    id: String,
+    name: String,
+    #[serde(flatten)]
+    on: SearchSearchOn
+}
+
+#[derive(Deserialize)]
+#[serde(tag = "__typename)]
+enum SearchSearchOn {
+    Person(SearchSearchOnPerson),
+    Organization(SearchSearchOnOrganization),
+}

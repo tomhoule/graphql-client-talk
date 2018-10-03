@@ -135,6 +135,16 @@ Example
 
 ---
 
+### Chapter 1 - Objects
+
+<video
+  src='./assets/objects.mp4'
+  autoPlay
+  loop
+/>
+
+---
+
 <CodeSurfer
   notes="Our API - an address book"
   lang="graphql"
@@ -182,6 +192,12 @@ fn get_birthday_from_api(name: String) -> Result<Option<Date>, failure::Error> {
   `}
   showNumbers={true}
 />
+
+---
+
+### Chapter 2 - Unions
+
+![](./assets/unions.jpg)
 
 ---
 
@@ -247,50 +263,63 @@ fn get_birthday_from_api() -> Result<(), failure::Error> {
 
 ---
 
-Query
+### Chapter 3 - Interfaces
 
-```graphql
-{
-  search(text: "an") {
-    ... on Human {
-      name
-      height
-    }
-    ... on Droid {
-      name
-      primaryFunction
-    }
-    ... on Starship {
-      name
-      length
-    }
-  }
-}
+![](./assets/interfaces.jpg)
+
+---
+
+<CodeSurfer
+  notes="A new challenger appears"
+  lang="graphql"
+  code={require('!raw-loader!./schema.graphql')}
+  showNumbers={true}
+  steps={[
+    { range: [5, 9], notes: 'Our root fields' },
+    { lines: [6, 7], notes: "we did that" },
+    { lines: [8], notes: "let's do the last one" },
+    { range: [13, 16], notes: "interfaces are like unions, but..." },
+    { range: [14, 15], notes: "they define common fields" },
+    { range: [18, 22], notes: "and the members are defined differently" },
+    { lines: [18], notes: "and the members are defined differently" },
+    { range: [13, 22], notes: "and the members are defined differently" },
+  ]}
+/>
+
+---
+
+<CodeSurfer
+  lang="graphql"
+  code={require('!raw-loader!./interface_query.graphql')}
+  showNumbers
+  steps={[
+    { range: [0, 38], notes: 'Request-response' },
+    { range: [0, 17], notes: 'Request' },
+    { range: [6, 7], notes: 'We can ask for the common fields' },
+    { range: [0, 17], notes: 'Otherwise nothing new' },
+    { range: [19, 38], notes: 'the response looks like a union response' },
+    { range: [40, 100], notes: 'now for the generated code' },
+    { range: [42, 45], notes: "It's a non-null array" },
+    { lines: [47, 48, 49, 50, 53], notes: "Interfaces are like objects" },
+    { range: [55, 60], notes: "Interfaces are also like enums" },
+    { range: [47, 53], notes: 'FUUUUUSION!' },
+  ]}
+/>
+
+```notes
+- How do you combine the enum and the struct? You can't... but serde has got us covered
 ```
 
 ---
 
-Response (JSON)
+### Takeaways
 
-```graphql
-{
-  "data": {
-    "search": [
-      {
-        "name": "Han Solo",
-        "height": 1.8
-      },
-      {
-        "name": "Leia Organa",
-        "height": 1.5
-      },
-      {
-        "name": "TIE Advanced x1",
-        "length": 9.2
-      }
-    ]
-  }
-}
+- Serde is awesome
+- Rust is really good at playing with other languages
+
+
+```notes
+- I don't think I could have done it without all the serde annotations
 ```
 
 ---
@@ -675,6 +704,8 @@ export default Split
 
 ### Macros - Cargo expand
 
+![](./assets/cargo_expand.jpg)
+
 ---
 
 ### Dependencies - cargo-edit
@@ -687,15 +718,10 @@ export default Split
 
 ---
 
-### Cargo tree
-
----
-
 ### Future
 
 - clients everywhere!
 - normalized cache shared between implementations
-- live updates with subscriptions
 - build script, CLI and possibly proc macro-based codegen workflows
 - codegen as an npm package
 - better query validation
@@ -744,7 +770,7 @@ export default Split
 
 ### Keep in touch
 
-- graphql-client: https://github.com/tomhoule/graphql-client
+- graphql-client: https://github.com/graphql-rust/graphql-client
 - mastodon: [@vache_a_lemmes@eldritch.cafe](https://eldritch.cafe/web/accounts/30706)
 - twitter: [@_tomhoule](https://twitter.com/_tomhoule)
 
@@ -756,3 +782,4 @@ export default Split
 - cargo-release: https://github.com/meh
 - GraphQL guide: https://graphql.org
 - [Why you might want a GraphQL client](https://blog.apollographql.com/why-you-might-want-a-graphql-client-e864050f789c)
+- [serde.rs](https://serde.rs)
