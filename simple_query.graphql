@@ -33,3 +33,7 @@ struct FindSomeonePerson {
     name: String,
     birthday: Option<Date>,
 }
+
+struct Variables {
+    name: String,
+}

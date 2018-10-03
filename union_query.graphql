@@ -1,0 +1,53 @@
+# The query (GraphQL)
+
+query EntryById {
+  entry(id: "301") {
+    __typename
+    ... on Person {
+      birthday
+    }
+    ... on Organization {
+      members(page: 1) {
+        birthday
+      }
+    }
+  }
+}
+
+# Response (JSON)
+
+{
+    "data": {
+        "entry": {
+            "__typename": "Person",
+            "birthday": "1988-12-18"
+        }
+    }
+}
+
+# Generated code (Rust)
+
+#[derive(Deserialize)]
+struct ResponseData {
+    entry: Option<EntryByIdEntry>,
+}
+
+#[derive(Deserialize)]
+#[serde(tag = "__typename")]
+enum EntryByIdEntry {
+    Person(EntryByIdEntryOnPerson),
+    Organization(EntryByIdEntryOnOrganization),
+    DeletedEntry
+}
+
+#[derive(Deserialize)]
+struct EntryByidEntryOnPerson {
+    birthday: Option<Date>,
+}
+
+#[derive(Deserialize)]
+struct EntryByIdEntryOnOrganization {
+    members: Vec<EntryByIdEntryOnOrganizationMembers>,
+}
+
+struct Variables;

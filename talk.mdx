@@ -176,7 +176,7 @@ Example
   notes="how we would use it"
   code={`
 fn get_birthday_from_api(name: String) -> Result<Option<Date>, failure::Error> {
-  let response = make_request()?;
+  let response = make_request(name)?;
   response.data.and_then(|data| data.person).and_then(|person| person.birthday)
 }
   `}
@@ -185,12 +185,65 @@ fn get_birthday_from_api(name: String) -> Result<Option<Date>, failure::Error> {
 
 ---
 
-Even more types!
+<CodeSurfer
+  notes="Remember our api"
+  lang="graphql"
+  code={require('!raw-loader!./schema.graphql')}
+  showNumbers={true}
+  steps={[
+    { range: [5, 9], notes: 'Our root fields' },
+    { lines: [6], notes: "we just did this" },
+    { lines: [7], notes: "let's do that" },
+    { lines: [11], notes: "unions are a bit like untagged unions in Rust" },
+    { range: [18, 36], notes: "any one of these types" },
+  ]}
+/>
 
-```graphql
-# In the schema
-union SearchResult = Human | Droid | Starship
-```
+---
+
+<CodeSurfer
+  lang="graphql"
+  code={require('!raw-loader!./union_query.graphql')}
+  showNumbers
+  steps={[
+    { range: [0, 26], notes: 'Request-response' },
+    { range: [1, 15], notes: 'the query looks different' },
+    { range: [6, 13], notes: 'we have to discriminate which fields we select by type'},
+    { range: [5, 5], notes: 'we can ask the name of the type we get (introspection)' },
+    { range: [17, 26], notes: 'we get what we asked for'},
+    { range: [28, 33], notes: 'put it in convenient Rust data structures' },
+    { range: [35, 41], notes: 'we have a tag, serde can give us an enum' },
+    { range: [43, 51], notes: 'selections on objects work like before' },
+  ]}
+/>
+
+---
+
+<CodeSurfer
+  lang="rust"
+  notes="how we would use it"
+  code={`
+fn get_birthday_from_api() -> Result<(), failure::Error> {
+  let response = make_request()?;
+  response.data
+    .and_then(|data| data.entry)
+    .map(|entry| {
+      match entry {
+        EntryByIdEntry::Person(person) => send_birthday_card(person),
+        EntryByIdEntry::Organization(organization) =>
+            send_birthday_card_to_members(organization),
+        EntryByIdEntry::DeletedEntry =>
+            return Err(format_err!("The entry was deleted")),
+      }
+    });
+  Ok(())
+}
+  `}
+  showNumbers={true}
+  steps={[
+    { range: [7, 13] },
+  ]}
+/>
 
 ---
 

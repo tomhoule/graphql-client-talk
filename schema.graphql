@@ -28,7 +28,7 @@ type Organization implements SearchResult {
 }
 
 """
-This entry was deleted - it is anonymized a
+This entry was deleted - it is anonymized
 """
 type DeletedEntry {
     id: ID!
