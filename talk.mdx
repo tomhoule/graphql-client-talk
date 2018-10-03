@@ -135,6 +135,22 @@ Example
 
 ---
 
+<CodeSurfer
+  notes="Prelude: what's the API?"
+  lang="rust"
+  code={require('!raw-loader!./api_example.rs')}
+  showNumbers
+  steps={[
+    { range: [1, 6], notes: 'Say where your query and your schema are' },
+    { range: [8, 8], notes: 'A module gets generated' },
+    { range: [10, 17], notes: 'It contains all you need for typed requests and responses with the query' },
+    { range: [19, 20], notes: 'You can easily build your query' },
+    { range: [19, 24], notes: 'And get the response' },
+  ]}
+/>
+
+---
+
 ### Chapter 1 - Objects
 
 <video
@@ -178,6 +194,11 @@ Example
     { range: [23, 35], notes: 'put it in convenient Rust data structures' },
   ]}
 />
+
+```notes
+- Why we have this naming scheme
+- Lots of small interesting challenges like that
+```
 
 ---
 
@@ -324,273 +345,6 @@ fn get_birthday_from_api() -> Result<(), failure::Error> {
 
 ---
 
-A new challenger appears!
-
-```graphql
-interface Character {
-  id: ID!
-  name: String!
-  friends: [Character]
-  appearsIn: [Episode]!
-}
-```
-
----
-
-```graphql
-type Human implements Character {
-  id: ID!
-  name: String!
-  friends: [Character]
-  appearsIn: [Episode]!
-  starships: [Starship]
-  totalCredits: Int
-}
-
-type Droid implements Character {
-  id: ID!
-  name: String!
-  friends: [Character]
-  appearsIn: [Episode]!
-  primaryFunction: String
-}
-```
-
----
-
-```graphql
-query HeroForEpisode($ep: Episode!) {
-  hero(episode: $ep) {
-    name
-    ... on Droid {
-      primaryFunction
-    }
-  }
-}
-```
-
----
-
-```graphql
-{
-  "data": {
-    "hero": {
-      "name": "R2-D2",
-      "primaryFunction": "Astromech"
-    }
-  }
-}
-```
-
----
-
-### This is all very javascripty
-
-
-```notes
-- A lot of things were easy (nullability, mapping the primitive types, custom scalars)
-- Challenge for the library: map that to nice Rust data structures
-```
-
----
-
-Interlude: what's the API?
-
-
-```rust
-#[derive(GraphQLQuery)]
-#[graphql(
-    schema_path = "src/graphql/schema.json",
-    query_path = "src/graphql/queries/my_query.graphql",
-)]
-pub struct MyQuery
-
-```
-
-...
-
-```rust
-    // this is the important line
-    let request_body = MyQuery::build_query(variables);
-
-    let client = reqwest::Client::new();
-    let mut res = client.post("/graphql").json(&request_body).send()?;
-    let response_body: Response<my_query::ResponseData> = res.json()?;
-```
-
-```notes
-- Build script and CLI codegen are WIP
-```
-
----
-
-```graphql
-query MyQuery($page: Int!) {
-    contacts(page: $page) {
-        __typename
-        name
-        ... on Person {
-            birthday
-        }
-        ... on Organization {
-            industry
-            members(minimumAge: 40) {
-                birthday
-                name
-            }
-        }
-    }
-}
-```
-
-```notes
-- Even for a simple query, it's not obvious
-- We have Person twice, with different fields
-- Not options, that would not be nice
-- We have to generate two Person structs
-- Solution: paths in names
-- Lots of small interesting problems like thiss
-```
-
----
-
-### serde
-
----
-
-```graphql
-{
-  search(text: "an") {
-    ... on Human {
-      name
-      height
-    }
-    ... on Droid {
-      name
-      primaryFunction
-    }
-    ... on Starship {
-      name
-      length
-    }
-  }
-}
-```
-
-```notes
-- remember the query with an union
-```
-
----
-
-```rust
-// union SearchResult = Human | Droid | Starship
-
-#[derive(Deserialize)]
-#[serde(tag = "__typename")]
-enum Search {
-  Human(SearchOnHuman),
-  Droid(SearchOnDroid),
-  Starship(SearchOnStarship),
-}
-```
-
-<small>See <a href="https://serde.rs/enum-representations.html">enum representations</a> in the serde docs</small>
-
-
----
-
-```graphql
-query MyQuery {
-  search(searchTerm: "Tatooine") {
-    ...onHuman {
-      name
-    }
-    ...onDroid {
-      model
-    }
-    ...onStarship {
-      engine { name }
-    }
-  }
-}
-
-```
-
-```notes
-- You _have_to include __typename
-- And now for something completely different: interfaces
-```
-
----
-
-Interfaces
-
-```graphql
-query HeroQuery {
-  hero(episode: JEDI) { # Character
-    __typename # will return the concrete type
-    name # part of Character
-    ...on Human {
-      hairColor
-    }
-  }
-}
-```
-
-```notes
-- Remember: this is what we write
-```
-
----
-
-```json
-{
-  "data": {
-    "hero": {
-      "__typename": "Human",
-      "name": "Obi-Wan Kenobi",
-      "hairColor": "WHITE"
-    }
-  }
-}
-```
-
-
-```notes
-- This is what we get
-- We have the type! we can statically know which fields we will get.
-```
-
-
----
-
-```rust
-
-#[derive(Deserialize)]
-struct MyQueryHero { // Character
-  typename: String,
-  // common fields
-  name: String,
-  #[serde(flatten)]
-  on: MyQueryHeroOn,
-}
-
-#[derive(Deserialize)]
-#[serde(tag = "__typename")]
-enum MyQueryHeroOn {
-  Human(MyQueryHeroOnHuman),
-  Droid,
-  Starship,
-}
-```
-
-```notes
-- 'member
-```
-
----
-
 ### Question to the audience
 
 <video
@@ -601,54 +355,31 @@ enum MyQueryHeroOn {
 
 ---
 
-if a GraphQL query wore pants...
+<CodeSurfer
+  notes='if a GraphQL query wore pants...'
+  lang="rust"
+  code={require('!raw-loader!./pants.rs')}
+  steps={[
+    { range: [1, 10], notes: 'would it wear them like this?'},
+    { range: [11, 21], notes: 'or like this?'},
+    { range: [1, 21], notes: 'vote' },
+  ]}
+/>
 
 ---
 
-would it wear them like this
-
-```rust
-fn call<Q>(
-    &self,
-    variables: &Q::Variables
-) -> Future<GraphQLQueryResult>
-where Q: GraphQLQuery
-```
-...
-```rust
-
-let response = await!(client.call::<RepositoriesIndex>(&variables));
-```
+### Conclusion: Learnings
 
 ---
 
-or like this?
+### Be prepared for contributors
 
-```rust
-fn call<Q>(
-    &self,
-    query: Q,
-    variables: &Q::Variables
-) -> Future<GraphQLQueryResult>
-where Q: GraphQLQuery
-```
-...
+- Not enough time invested in a CONTRIBUTING.md
+- Be ready to comment and review a lot
+- I thought the library was ready at 0.1 (wrong)
+- Underestimated the work - even for a small project like this
+- Shoutout to all those who contributed, and in particular to @h-michael, @LegNeato and @mathstuf
 
-```rust
-let response = await!(client.call(RepositoriesIndex, &variables));
-
-```
-
----
-
-### Learnings
-
----
-
-
-Contributors come at you fast and when you are least prepared.
-
-![](./assets/issue_screenshot_1.png)
 
 ```notes
 - Thought it was ready - wrong
@@ -659,15 +390,11 @@ Contributors come at you fast and when you are least prepared.
 
 export default Split
 
+![](./assets/issue_screenshot_1.png)
 
-<img src="./assets/issue_screenshot_2.png" />
+![](./assets/issue_screenshot_2.png)
 
-<video
-  autoPlay
-  loop
-  src="./assets/bubz.mp4"
-/>
-
+![](./assets/surprised_bubz_small.jpg)
 
 ---
 
@@ -680,10 +407,11 @@ export default Split
 />
 
 <div>
-    <small>cool crates</small>
+    <small>Useful crates</small>
 </div>
 
 ```notes
+- Other learning: the ecosystem
 - We have a really awesome ecosystem of basic building blocks like serde
 - We can build higher-level libraries on top
 - In graphql, graphql-parser
@@ -779,7 +507,6 @@ export default Split
 ### Links
 
 
-- cargo-release: https://github.com/meh
 - GraphQL guide: https://graphql.org
 - [Why you might want a GraphQL client](https://blog.apollographql.com/why-you-might-want-a-graphql-client-e864050f789c)
 - [serde.rs](https://serde.rs)

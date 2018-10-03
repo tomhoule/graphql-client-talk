@@ -41,7 +41,7 @@ query Search($name: String!) {
 
 #[derive(Deserialize)]
 struct ResponseData {
-    entry: Vec<SearchSearch>,
+    search: Vec<SearchSearch>,
 }
 
 #[derive(Deserialize)]
