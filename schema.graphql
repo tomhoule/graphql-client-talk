@@ -1,0 +1,36 @@
+schema {
+    query QueryRoot
+}
+
+type QueryRoot {
+    person(name: String!): Person
+    entry(id: ID!): Entry
+    search(name: String!): [SearchResult!]!
+}
+
+union Entry = Person | Organization | DeletedEntry
+
+interface SearchResult {
+    id: ID!
+    name: String!
+}
+
+type Person implements SearchResult {
+    id: ID!
+    name: String!
+    birthday: Date
+}
+
+type Organization implements SearchResult {
+    id: ID!,
+    name: String!
+    members(page: Int = 1): [Person]
+}
+
+"""
+This entry was deleted - it is anonymized a
+"""
+type DeletedEntry {
+    id: ID!
+    deletedAt: DateTime
+}

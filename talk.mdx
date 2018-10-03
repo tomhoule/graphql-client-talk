@@ -1,5 +1,6 @@
-export { swiss   as theme } from 'mdx-deck/themes'
+export { swiss as theme } from 'mdx-deck/themes'
 import { Split } from 'mdx-deck/layouts'
+import { CodeSurfer } from "mdx-deck-code-surfer"
 
 graphql-client
 
@@ -7,7 +8,6 @@ graphql-client
 - name
 - first time talking on a meetup
 - I want to talk about a small library I started early June
-- 0.5 release this week
 ```
 
 ---
@@ -74,17 +74,19 @@ no graphql client in Rust
 />
 
 - A query language and a specification for building APIs
-- Developed at Facebook
-- Open sourced in 2015
-- A very rich, fast-growing ecosystem
-- Fast adoption -> GitHub, Shopify, Facebook, Twitter...
+- All the data you need for a view in one request (client-centric)
+- Developed at Facebook, open sourced in 2015
+- Very rich, growing ecosystem, fast adoption (Github, Shopify, Facebook, Twitter...)
 
 ```notes
 - Technology for building APIs, with clients requesting data from a servers
 - Spec defining two languages, a type system and the behaviour of servers
 - One query -> query a graph objecst and fields
-- Fetch exactly what you need
-- Nesting (post -> comment -> author -> posts)
+- Client-centric
+  - Fetch exactly what you need
+  - Nesting (post -> comment -> author -> posts)
+- Makes it easy to evolve your API
+- Transport agnostic, but most of the time JSON over HTTP
 ```
 
 ---
@@ -113,15 +115,15 @@ Example
 - It's easy to make wrong requests
 - That's a small part of the library
 - No caching yet
-- This is what I want to talk about
+- Strong typing is what I want to talk about
 ```
 
 ---
 
-## Introspection
+## How it works - introspection
 
 - GraphQL is typed
-- Introspection is defined by the spec
+- Introspection is defined by the spec and meant to be used for code generation
 - With a GraphQL query and the schema, we can generate a struct for the response shape
 
 ```notes
@@ -129,6 +131,25 @@ Example
 - You can ask a server, at runtime, what API it exposes (also in the spec)
 - It returns a structured response you can generate code for a client from - think mini-SDK.
 - Why you need both query and schema (selection)
+```
+
+---
+
+<CodeSurfer
+  notes="Our API - an address book"
+  lang="graphql"
+  code={require('!raw-loader!./schema.graphql')}
+  showNumbers={true}
+  steps={[
+    { range: [1, 3], notes: 'We first define the root field: QueryRoot' },
+    { range: [5, 9], notes: 'The fields can take arguments at any depth' },
+    { lines: [6], notes: "Let's start here" },
+    { range: [18, 22], notes: "Object types are like structs" },
+  ]}
+/>
+
+```notes
+- Explain query, mutations, subscriptions
 ```
 
 ---
