@@ -3,7 +3,7 @@
     schema_path = "src/graphql/schema.json",
     query_path = "src/graphql/queries/my_query.graphql",
 )]
-pub struct MyQuery
+pub struct MyQuery;
 
 // magic happens
 

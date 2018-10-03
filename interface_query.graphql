@@ -53,7 +53,7 @@ struct SearchSearch {
 }
 
 #[derive(Deserialize)]
-#[serde(tag = "__typename)]
+#[serde(tag = "__typename")]
 enum SearchSearchOn {
     Person(SearchSearchOnPerson),
     Organization(SearchSearchOnOrganization),

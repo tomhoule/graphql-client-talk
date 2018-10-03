@@ -50,7 +50,9 @@ no graphql client in Rust
 <small>counted with <a href="https://github.com/Aaronepower/tokei">tokei</a></small>
 
 ```notes
-- impostor?
+- even though the line count may suggest otherwise
+- you might wonder why there is so much JSON
+- let's backtrack a bit
 ```
 
 ---
@@ -195,7 +197,7 @@ Example
   code={`
 fn get_birthday_from_api(name: String) -> Result<Option<Date>, failure::Error> {
   let response = make_request(name)?;
-  response.data.and_then(|data| data.person).and_then(|person| person.birthday)
+  Ok(response.data.and_then(|data| data.person).and_then(|person| person.birthday))
 }
   `}
   showNumbers={true}
