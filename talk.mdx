@@ -154,34 +154,34 @@ Example
 
 ---
 
-It has types!
 
-```graphql
-type Character {
-  name: String!
-  appearsIn: [Episode]!
-}
-```
-
-```notes
-- Cool, we can map that to a struct!
-```
+<CodeSurfer
+  lang="graphql"
+  code={require('!raw-loader!./simple_query.graphql')}
+  showNumbers={true}
+  steps={[
+    { range: [0, 21], notes: 'Request-response' },
+    { tokens: { 3: [2] }, notes: 'name the query'},
+    { tokens: { 3: [3, 4, 5, 6, 7, 8] }, notes: 'declare variables (parameters)' },
+    { range: [4, 8], notes: 'select what we want'},
+    { range: [11, 21], notes: 'get what we asked for'},
+    { range: [23, 35], notes: 'put it in convenient Rust data structures' },
+  ]}
+/>
 
 ---
 
-More types!
-
-```graphql
-type Starship {
-  id: ID!
-  name: String!
-  length(unit: LengthUnit = METER): Float
+<CodeSurfer
+  lang="rust"
+  notes="how we would use it"
+  code={`
+fn get_birthday_from_api(name: String) -> Result<Option<Date>, failure::Error> {
+  let response = make_request()?;
+  response.data.and_then(|data| data.person).and_then(|person| person.birthday)
 }
-```
-
-```notes
-- Every field can take arguments
-```
+  `}
+  showNumbers={true}
+/>
 
 ---
 

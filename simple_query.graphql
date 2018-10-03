@@ -1,0 +1,35 @@
+# Query (GraphQL)
+
+query FindSomeone($name: String!) {
+  person(name: $name) {
+    id
+    name
+    birthday
+  }
+}
+
+# Response (JSON)
+
+{
+    "data": {
+        "person": {
+            "id": "14928",
+            "name": "Harrison Ford",
+            "birthday": "1942-08-13"
+        }
+    }
+}
+
+# Generated code (Rust)
+
+#[derive(Deserialize)]
+struct ResponseData {
+    person: Option<FindSomeonePerson>,
+}
+
+#[derive(Deserialize)]
+struct FindSomeonePerson {
+    id: String,
+    name: String,
+    birthday: Option<Date>,
+}
