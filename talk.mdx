@@ -201,7 +201,10 @@ Example
   code={`
 fn get_birthday_from_api(name: String) -> Result<Option<Date>, failure::Error> {
   let response = make_request(name)?;
-  Ok(response.data.and_then(|data| data.person).and_then(|person| person.birthday))
+  let birthday = response.data
+      .and_then(|data| data.person)
+      .and_then(|person| person.birthday);
+  Ok(birthday)
 }
   `}
   showNumbers={true}
