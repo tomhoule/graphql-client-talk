@@ -8,11 +8,16 @@ pub struct MyQuery;
 // magic happens
 
 pub mod my_query {
+    // The shape of the response
     struct ResponseData { ... }
+    // The variables needed by the query
     struct Variables { ... }
 
+    // A convenience trait
     impl graphql_client::GraphQLQuery for MyQuery {
-        ...
+        fn build_query(variables: Variables) -> RequestBody {
+            ...
+        }
     }
 }
 

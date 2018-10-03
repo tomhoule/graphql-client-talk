@@ -62,6 +62,8 @@ no graphql client in Rust
     height="150"
 />
 
+### GraphQL
+
 - A query language and a specification for building APIs
 - All the data you need for a view in one request (client-centric)
 - Developed at Facebook, open sourced in 2015
@@ -132,9 +134,9 @@ Example
   steps={[
     { range: [1, 6], notes: 'Say where your query and your schema are' },
     { range: [8, 8], notes: 'A module gets generated' },
-    { range: [10, 17], notes: 'It contains all you need for typed requests and responses with the query' },
-    { range: [19, 20], notes: 'You can easily build your query' },
-    { range: [19, 24], notes: 'And get the response' },
+    { range: [10, 21], notes: 'It contains what you need to build a request and deserialize the response' },
+    { range: [24, 25], notes: 'You can easily build your query' },
+    { range: [24, 29], notes: 'And get the response' },
   ]}
 />
 
@@ -244,6 +246,7 @@ fn get_birthday_from_api(name: String) -> Result<Option<Date>, failure::Error> {
     { range: [6, 13], notes: 'we have to discriminate which fields we select by type'},
     { range: [5, 5], notes: 'we can ask the name of the type we get (introspection)' },
     { range: [17, 26], notes: 'we get what we asked for'},
+    { range: [0, 26], notes: 'Request-response' },
     { range: [28, 33], notes: 'put it in convenient Rust data structures' },
     { range: [35, 41], notes: 'we have a tag, serde can give us an enum' },
     { range: [43, 51], notes: 'selections on objects work like before' },
@@ -315,6 +318,7 @@ fn get_birthday_from_api() -> Result<(), failure::Error> {
     { range: [6, 7], notes: 'We can ask for the common fields' },
     { range: [0, 17], notes: 'Otherwise nothing new' },
     { range: [19, 38], notes: 'the response looks like a union response' },
+    { range: [0, 38], notes: 'Request-response' },
     { range: [40, 100], notes: 'now for the generated code' },
     { range: [42, 45], notes: "It's a non-null array" },
     { lines: [47, 48, 49, 50, 53], notes: "Interfaces are like objects" },
