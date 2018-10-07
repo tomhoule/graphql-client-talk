@@ -2,7 +2,12 @@ Today's release has by far the most improvements since graphql-client was initia
 
 ## What graphql_client does, in short
 
+Given a GraphQL query, and the schema of the API you are querying, the library generates a Rust module that gives you:
 
+- Correct interaction (request/response shapes)
+- Strongly typed responses
+- Strongly typed query variables
+- Some degree of validation (behaviour for deprecated fields is configurable for example)
 
 ## What is in 0.5
 
@@ -30,7 +35,7 @@ Here are a few exciting features we want to work on next:
 
 - Currently code generation works with a custom derive, but we want to implement CLI and build script based flows as well. This should enable more code sharing, therefore reduced code size.
 
-- Implement platform-specific client libraries to further reduce boilerplate. The recent publication of the [web-sys](web-sys) crate enables the creation a browser-native client built on top of it.
+- Implement platform-specific client libraries to further reduce boilerplate. The recent publication of the [web-sys](web-sys) crate enables the creation a browser-native client built on top of it - work has already started.
 
 - A normalized cache implementation similar to what is implemented by apollo-client.
 
